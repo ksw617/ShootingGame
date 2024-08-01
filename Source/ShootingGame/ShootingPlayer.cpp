@@ -89,8 +89,8 @@ void AShootingPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AShootingPlayer::Fire);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AShootingPlayer::StopFire);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AShootingPlayer::Fire);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AShootingPlayer::StopFire);
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AShootingPlayer::Move);

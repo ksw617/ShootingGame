@@ -75,4 +75,5 @@ protected:
 
 	void Fire();
 	void StopFire();
+	//void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 };
