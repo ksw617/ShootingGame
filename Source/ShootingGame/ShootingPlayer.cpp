@@ -88,6 +88,10 @@ void AShootingPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
+		// Jumping
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AShootingPlayer::Fire);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AShootingPlayer::StopFire);
+
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AShootingPlayer::Move);
 
@@ -134,5 +138,15 @@ void AShootingPlayer::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AShootingPlayer::Fire()
+{
+	UE_LOG(LogTemp, Log, TEXT("Fire"));
+}
+
+void AShootingPlayer::StopFire()
+{
+	UE_LOG(LogTemp, Log, TEXT("StopFire"));
 }
 
