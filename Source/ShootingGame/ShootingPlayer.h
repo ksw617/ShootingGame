@@ -49,6 +49,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	class UCharacterAnimInstance* AnimInstance;
+
 
 public:
 	AShootingPlayer();
@@ -75,5 +79,8 @@ protected:
 
 	void Fire();
 	void StopFire();
-	//void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+public:
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 };

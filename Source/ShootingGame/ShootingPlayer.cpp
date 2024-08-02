@@ -13,6 +13,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 
+//Custom
+#include "CharacterAnimInstance.h"
+
 // Sets default values
 AShootingPlayer::AShootingPlayer()
 {
@@ -51,13 +54,16 @@ AShootingPlayer::AShootingPlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+
+
 }
 
 // Called when the game starts or when spawned
 void AShootingPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	AnimInstance = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance->OnMontageEnded.AddDynamic(this, &AShootingPlayer::OnAttackMontageEnded);
 }
 
 // Called every frame
@@ -142,11 +148,47 @@ void AShootingPlayer::Look(const FInputActionValue& Value)
 
 void AShootingPlayer::Fire()
 {
-	UE_LOG(LogTemp, Log, TEXT("Fire"));
+	if (IsValid(AnimInstance))
+	{
+		AnimInstance->PlayMontage();
+	}
 }
 
 void AShootingPlayer::StopFire()
 {
 	UE_LOG(LogTemp, Log, TEXT("StopFire"));
+}
+
+void AShootingPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	float AttackRange = 10000.f;
+
+	FHitResult HitResult;
+
+	FVector Center = GetActorLocation();
+	FVector Forwad = Center + GetActorForwardVector() * AttackRange;
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(this);
+
+	bool Result = GetWorld()->LineTraceSingleByChannel
+	(
+		OUT HitResult,
+		Center,
+		Forwad,
+		ECollisionChannel::ECC_GameTraceChannel1,
+		params
+	);
+
+	if (Result)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Hit"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("Not Hit"));
+	}
+
+	DrawDebugLine(GetWorld(), Center, HitResult.Location, FColor::Green);
+		
 }
 
