@@ -7,13 +7,16 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
-//Input
+
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 
-//Custom
+//Apply Damage
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
+
 #include "CharacterAnimInstance.h"
 
 // Sets default values
@@ -55,7 +58,12 @@ AShootingPlayer::AShootingPlayer()
 	PrimaryActorTick.bCanEverTick = true;
 
 
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> PS(TEXT("/Script/Engine.ParticleSystem'/Game/ParagonMurdock/FX/Particles/Abilities/Primary/FX/P_PlasmaShot_Hit_World.P_PlasmaShot_Hit_World'"));
 
+	if (PS.Succeeded())
+	{
+		HitParticle = PS.Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -165,8 +173,9 @@ void AShootingPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrup
 
 	FHitResult HitResult;
 
-	FVector Center = GetActorLocation();
-	FVector Forwad = Center + GetActorForwardVector() * AttackRange;
+
+	FVector Center = FollowCamera->GetComponentLocation();
+	FVector Forwad = Center + FollowCamera->GetForwardVector() * AttackRange;
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(this);
 
@@ -182,13 +191,29 @@ void AShootingPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrup
 	if (Result)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Hit"));
+		
+
+		if (HitResult.GetActor())
+		{
+			DrawDebugLine(GetWorld(), Center, HitResult.ImpactPoint, FColor::Green, true);
+			DrawDebugSolidBox(GetWorld(), HitResult.ImpactPoint, FVector(10.f, 10.f, 10.f), FColor::Blue, true);
+
+			AActor* HitActor = HitResult.GetActor();
+			UGameplayStatics::ApplyDamage(HitActor, 10.f, GetController(), HitActor, NULL);
+		}
+
+		if (HitParticle)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, HitResult.ImpactPoint);
+		}
 	}
 	else
 	{
 		UE_LOG(LogTemp, Log, TEXT("Not Hit"));
+		DrawDebugLine(GetWorld(), Center, HitResult.Location, FColor::Red);
 	}
 
-	DrawDebugLine(GetWorld(), Center, HitResult.Location, FColor::Green);
+
 		
 }
 

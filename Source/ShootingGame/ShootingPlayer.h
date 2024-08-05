@@ -53,6 +53,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	class UCharacterAnimInstance* AnimInstance;
 
+	UPROPERTY(VisibleAnywhere)
+	class UParticleSystem* HitParticle;
 
 public:
 	AShootingPlayer();
